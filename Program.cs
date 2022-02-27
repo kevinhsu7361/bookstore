@@ -9,7 +9,10 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Add new service
 builder.Services.AddOpenApiDocument();
+builder.Services.AddControllers().AddNewtonsoftJson();
 
 builder.Services.AddDbContext<BookstoreContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -29,7 +32,7 @@ if (app.Environment.IsDevelopment())
         // 這裡的 Path 用來設定 ReDoc UI 的路由 (網址路徑) (一定要以 / 斜線開頭)
         config.Path = "/redoc";
     });
-    
+
     app.UseSwaggerUI();
 }
 
