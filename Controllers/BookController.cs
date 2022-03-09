@@ -43,7 +43,7 @@ namespace bookstore.Controllers
             var book = db.Books.Find(id);
             if (book == null)
             {
-                throw new ArgumentException("找不到ID");
+                return NotFound();
             }
             db.Entry(book).Reference(b => b.Author).Load(); // 一對一
             var result = (new BookRead()).InjectFrom(book) as BookRead;
@@ -54,8 +54,8 @@ namespace bookstore.Controllers
         [HttpPost("")]
         public ActionResult<Book> PostBook(Book model)
         {
-            var item = Mapper.Map<Book>(model);
-            db.Books.Add(item);
+            //var item = Mapper.Map<Book>(model);
+            db.Books.Add(model);
             db.SaveChanges();
             return Created(nameof(GetBookById), new { id = model.BookId });
         }
@@ -66,9 +66,11 @@ namespace bookstore.Controllers
             var item = db.Books.Find(id);
             if (item == null)
             {
-                throw new ArgumentException("找不到ID");
+                return NotFound();
             }
             item.BookId = model.BookId;
+            item.BookName = model.BookName;
+            item.Description = model.Description;
             db.SaveChanges();
             return NoContent();
         }
