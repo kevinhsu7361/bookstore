@@ -20,25 +20,21 @@ namespace bookstore.Controllers
         }
 
         [HttpGet("")]
-        public ActionResult<IEnumerable<Book>> GetBooks()
+        public IEnumerable<BookRead> GetBooks()
         {
-            return db.Books.ToList(); // AuthorId = null
-            /*
-            var books = db.Books;
+            var books = db.Books.ToList();
             List<BookRead> booklist = new List<BookRead>();
             foreach (var book in books)
             {
                 if (book == null)
                 {
-                    yield return NotFound();
+                    //yield return NotFound();
                 }
                 db.Entry(book).Reference(b => b.Author).Load(); // 一對一
                 var result = (new BookRead()).InjectFrom(book) as BookRead;
                 result.AuthorName = book.Author.AuthorName;
-                booklist.Add(result);
+                yield return result;
             }
-            yield return Ok(booklist);
-            */
         }
 
         [HttpGet("{id}")]
