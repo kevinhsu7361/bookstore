@@ -20,11 +20,13 @@ namespace bookstore.Controllers
         }
 
         [HttpGet("")]
-        public IEnumerable<BookViewModel> GetBooks()
+        public IEnumerable<BookViewModel> GetBooks(int pagecount)
         {
+            const int pagerows = 5;
             var books = db.Books.ToList();
+            var query = books.Skip((pagecount - 1) * pagerows).Take(pagerows);
             List<BookViewModel> booklist = new List<BookViewModel>();
-            foreach (var book in books)
+            foreach (var book in query)
             {
                 if (book == null)
                 {
