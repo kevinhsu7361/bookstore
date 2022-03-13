@@ -20,10 +20,10 @@ namespace bookstore.Controllers
         }
 
         [HttpGet("")]
-        public IEnumerable<BookRead> GetBooks()
+        public IEnumerable<BookViewModel> GetBooks()
         {
             var books = db.Books.ToList();
-            List<BookRead> booklist = new List<BookRead>();
+            List<BookViewModel> booklist = new List<BookViewModel>();
             foreach (var book in books)
             {
                 if (book == null)
@@ -31,14 +31,18 @@ namespace bookstore.Controllers
                     //yield return NotFound();
                 }
                 db.Entry(book).Reference(b => b.Author).Load(); // 一對一
-                var result = (new BookRead()).InjectFrom(book) as BookRead;
+                var result = (new BookViewModel()).InjectFrom(book) as BookViewModel;
                 result.AuthorName = book.Author.AuthorName;
-                yield return result;
+                yield return new BookViewModel
+                {
+                    BookId = result.BookId,
+                    BookName = result.BookName
+                };
             }
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Book> GetBookById(int id)
+        public ActionResult<BookViewModel> GetBookById(int id)
         {
             var book = db.Books.Find(id);
             if (book == null)
@@ -46,7 +50,7 @@ namespace bookstore.Controllers
                 return NotFound();
             }
             db.Entry(book).Reference(b => b.Author).Load(); // 一對一
-            var result = (new BookRead()).InjectFrom(book) as BookRead;
+            var result = (new BookViewModel()).InjectFrom(book) as BookViewModel;
             result.AuthorName = book.Author.AuthorName;
             return Ok(result);
         }
