@@ -14,7 +14,7 @@ namespace bookstore.Models
         public string AuthorName { get; set; } = null!;
         public string Email { get; set; } = null!;
         public string Password { get; set; } = null!;
-        public string Account { get; set; } = null!;
+        public string? Token { get; set; }
 
         public virtual ICollection<Book> Books { get; set; }
     }

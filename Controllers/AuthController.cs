@@ -19,43 +19,48 @@ namespace bookstore.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
+        public static Author author = new Author();
+        private readonly BookstoreContext db;
         private readonly JwtHelpers helpers;
 
         public AuthController(JwtHelpers helpers,BookstoreContext db)
         {
+            this.db = db ;
             this.helpers = helpers;
         }
         
         [HttpPost("~/signup")]
-        public async Task<ActionResult<LoginViewModel>> Register(LoginViewModel model)
+        public void Register(Author author1)
         {
-            string passwordHash = BCrypt.Net.BCrypt.HashPassword(model.Password);
-            return Ok();
+            string passwordHash = HashPassword(author1.Password);
+            author.AuthorId = author1.AuthorId;
+            author.AuthorName = author1.AuthorName;
+            author.Email = author1.Email;
+            author.Password = passwordHash;
+            db.Authors.Add(author);
+            db.SaveChanges();
         }
 
         [HttpPost("~/signin")]
-        public ActionResult<LoginViewModel> Login(LoginViewModel model)
+        public void Login(LoginViewModel model)
         {
-            
-            if (CheckPassword(model.Username, model.Password))
+            if (CheckPassword(model))
             {
-                return new LoginViewModel()
-                {
-                    Token = helpers.GenerateToken(model.Username)
-                };
-            }
-            else
-            {
-                return BadRequest();
+                string token = helpers.GenerateToken(model.Username);
+                author.Token = token;
             }
         }
 
-        private bool CheckPassword(string username, string password)
+        private string HashPassword(string password)
         {
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(password);
-            bool verified = BCrypt.Net.BCrypt.Verify(password, passwordHash);
+            return passwordHash;
+        }
 
-            if (username == "Will" && verified)
+        private bool CheckPassword(LoginViewModel model)
+        {
+            bool verified = BCrypt.Net.BCrypt.Verify(model.Password, author.Password);
+            if (author.AuthorName == model.Username && verified)
             {
                 return true;
             }

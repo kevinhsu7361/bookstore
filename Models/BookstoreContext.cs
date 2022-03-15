@@ -34,17 +34,9 @@ namespace bookstore.Models
 
                 entity.Property(e => e.AuthorId).HasColumnName("AuthorID");
 
-                entity.Property(e => e.Account)
-                    .HasMaxLength(50)
-                    .HasColumnName("account");
-
                 entity.Property(e => e.AuthorName).HasMaxLength(50);
 
                 entity.Property(e => e.Email).HasMaxLength(50);
-
-                entity.Property(e => e.Password)
-                    .HasMaxLength(50)
-                    .HasColumnName("password");
             });
 
             modelBuilder.Entity<Book>(entity =>
